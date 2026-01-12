@@ -1,0 +1,432 @@
+/* ===========================
+   Formatting Toolbar Styles
+   =========================== */
+.formatting-toolbar {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-md);
+    max-width: 900px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.formatting-toolbar-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.formatting-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.formatting-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.formatting-control {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: 0.875rem;
+    transition: all var(--transition-base);
+}
+
+.formatting-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.formatting-control.color-picker {
+    width: 60px;
+    height: 36px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+.formatting-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.format-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.format-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.format-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.format-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.format-btn-primary {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.format-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.format-btn-secondary {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.format-btn-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--border-hover);
+}
+
+/* Infographic Styles */
+.infographic-container {
+    margin: var(--spacing-lg) 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.infographic-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.infographic-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3xl);
+    background: var(--bg-secondary);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.infographic-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.infographic-text {
+    color: var(--text-secondary);
+}
+
+.infographic-text strong {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: var(--spacing-sm);
+}
+
+.infographic-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-2xl);
+}
+
+.infographic-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bg-tertiary);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.generate-infographic-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    margin-top: var(--spacing-md);
+}
+
+.generate-infographic-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.generate-infographic-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Editing state styles */
+.concept-content.editing {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    background: var(--bg-secondary);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-sm);
+}
+
+/* Ensure formatting styles cascade to all child elements */
+.concept-content.editing * {
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    line-height: inherit;
+}
+
+/* Preserve bold and italic styling */
+.concept-content.editing strong,
+.concept-content.editing b {
+    font-weight: 700;
+}
+
+.concept-content.editing em,
+.concept-content.editing i {
+    font-style: italic;
+}
+
+/* Preserve code styling but inherit colors */
+.concept-content.editing code {
+    font-family: 'Monaco', 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+/* Preserve link styling */
+.concept-content.editing a {
+    text-decoration: underline;
+}
+
+.knowledge-check-item.editing,
+.quiz-question.editing,
+.activity-item.editing {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.edit-btn.save-mode {
+    background: var(--success-gradient);
+    color: white;
+    border-color: var(--success-color);
+}
+
+/* Responsive formatting toolbar */
+@media (max-width: 768px) {
+    .formatting-toolbar {
+        max-width: calc(100vw - 20px);
+        left: 10px !important;
+        right: 10px;
+    }
+
+    .formatting-toolbar-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .formatting-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .formatting-control {
+        width: 100%;
+    }
+
+    .formatting-buttons {
+        justify-content: center;
+    }
+}
+
+/* Quill.js Premium Styling */
+.ql-toolbar.ql-snow {
+    border: 1px solid var(--border-color) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+    padding: var(--spacing-sm) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.ql-container.ql-snow {
+    border: 1px solid var(--border-color) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+    font-family: var(--font-primary) !important;
+    font-size: 1rem !important;
+    background: white !important;
+}
+
+.ql-editor {
+    min-height: 200px !important;
+    padding: var(--spacing-lg) !important;
+    line-height: 1.8 !important;
+    color: var(--text-primary) !important;
+}
+
+.ql-editor blockquote {
+    border-left: 4px solid var(--primary-color) !important;
+    padding-left: var(--spacing-md) !important;
+    margin: var(--spacing-md) 0 !important;
+    font-style: italic !important;
+    color: var(--text-secondary) !important;
+    background: rgba(99, 102, 241, 0.05) !important;
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+}
+
+.ql-editor pre.ql-syntax {
+    background-color: #282c34 !important;
+    color: #abb2bf !important;
+    padding: var(--spacing-md) !important;
+    border-radius: var(--radius-sm) !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+    font-size: 0.85rem !important;
+    margin: var(--spacing-md) 0 !important;
+}
+
+/* Save button styling when editing */
+.edit-btn.save-mode {
+    background: var(--success-gradient) !important;
+    color: white !important;
+    border-color: var(--success-color) !important;
+    font-weight: 600;
+}
+
+.edit-btn.save-mode:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.ql-snow .ql-picker {
+    color: var(--text-secondary) !important;
+}
+
+.ql-snow.ql-toolbar button:hover,
+.ql-snow .ql-toolbar button:hover,
+.ql-snow.ql-toolbar button.ql-active,
+.ql-snow .ql-toolbar button.ql-active {
+    color: var(--primary-color) !important;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow .ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.ql-snow .ql-toolbar button.ql-active .ql-stroke {
+    stroke: var(--primary-color) !important;
+}
+
+/* Fix for Quill being too wide in some containers */
+.ql-container {
+    width: 100% !important;
+}
+
+/* Quiz Correct Answer Badge */
+.correct-badge {
+    display: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--success-color);
+    background: rgba(16, 185, 129, 0.1);
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-left: auto;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    transition: all var(--transition-base);
+}
+
+.quiz-question.editing .correct-badge {
+    display: inline-block;
+}
+
+.quiz-question.editing .quiz-option {
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.quiz-question.editing .quiz-option:hover {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.quiz-question.editing input[type="radio"]:checked~.correct-badge {
+    background: var(--success-gradient);
+    color: white;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    transform: scale(1.05);
+}
+
+.quiz-question.editing .quiz-option:has(input[type="radio"]:checked) {
+    border-color: var(--success-color) !important;
+    background: rgba(16, 185, 129, 0.05) !important;
+}

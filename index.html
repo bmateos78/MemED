@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemED - Transform Text into Learning Experiences</title>
+    <meta name="description"
+        content="Convert any text into comprehensive educational material with expanded content, knowledge checks, quizzes, and interactive activities.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="css/formatting-toolbar.css">
+
+    <!-- Quill.js Editor (Open Source Alternative) -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quill-resize-module@2.0.8/dist/resize.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-resize-module@2.0.8/dist/resize.min.js"></script>
+
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 5L35 12.5V27.5L20 35L5 27.5V12.5L20 5Z" stroke="url(#gradient1)" stroke-width="2"
+                            fill="url(#gradient2)" fill-opacity="0.1" />
+                        <circle cx="20" cy="20" r="6" fill="url(#gradient1)" />
+                        <defs>
+                            <linearGradient id="gradient1" x1="5" y1="5" x2="35" y2="35">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                            <linearGradient id="gradient2" x1="5" y1="5" x2="35" y2="35">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h1 class="logo-text">MemED</h1>
+                </div>
+                <p class="tagline">Transform text into comprehensive learning experiences</p>
+                <button id="settings-btn" class="btn btn-secondary" style="margin-top: 1rem;">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2-5.2l-4.2 4.2m0 6l4.2 4.2">
+                        </path>
+                    </svg>
+                    AI Settings
+                </button>
+            </div>
+        </header>
+
+        <!-- API Configuration Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>AI Configuration</h2>
+                    <button id="close-modal-btn" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description">Configure your LLM API to generate AI-powered knowledge checks</p>
+
+                    <div class="form-group">
+                        <label for="llm-provider">LLM Provider</label>
+                        <select id="llm-provider" class="form-control">
+                            <option value="none">None (Use Local Generation)</option>
+                            <option value="openai">OpenAI (GPT-4, GPT-3.5)</option>
+                            <option value="anthropic">Anthropic (Claude)</option>
+                            <option value="google">Google (Gemini)</option>
+                        </select>
+                    </div>
+
+                    <div id="api-config" class="hidden">
+                        <div class="form-group">
+                            <label for="api-key">API Key</label>
+                            <input type="password" id="api-key" class="form-control" placeholder="Enter your API key">
+                            <small class="form-hint">Your API key is stored locally and never sent to our
+                                servers</small>
+                        </div>
+
+                        <div class="form-group" id="model-group">
+                            <label for="model-name">Model</label>
+                            <select id="model-name" class="form-control">
+                                <!-- Options populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>💡 Tip:</strong> Using an LLM will generate more sophisticated and contextual knowledge
+                        checks based on deep understanding of your text.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="save-settings-btn" class="btn btn-primary">Save Settings</button>
+                    <button id="cancel-settings-btn" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon">📝</span>
+                        Input Your Text or PDF
+                    </h2>
+                    <p class="section-description">Paste text or upload a PDF file to transform into educational
+                        material</p>
+                </div>
+
+                <!-- File Upload Area -->
+                <div class="file-upload-area" id="file-upload-area">
+                    <input type="file" id="pdf-upload" accept=".pdf" style="display: none;">
+                    <label for="pdf-upload" class="file-upload-label">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                        </svg>
+                        <span class="upload-text">Click to upload PDF or drag and drop</span>
+                        <span class="upload-hint">PDF files only</span>
+                    </label>
+                    <div id="file-name" class="file-name hidden"></div>
+                </div>
+
+                <div class="input-divider">
+                    <span>OR</span>
+                </div>
+
+                <textarea id="input-text" class="input-textarea"
+                    placeholder="Paste your text here... (e.g., a paragraph from a textbook, article, or any educational content)"
+                    rows="8"></textarea>
+                <div class="input-actions">
+                    <button id="generate-btn" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                        Generate Educational Material
+                    </button>
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                        </svg>
+                        Clear
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-state hidden">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Analyzing text and extracting concepts with AI...</p>
+            </div>
+
+            <!-- Results Container -->
+            <div id="results-container" class="results-container hidden">
+                <!-- Concepts will be dynamically inserted here -->
+                <!-- Each concept follows: Concept Text → 2 Knowledge Checks → 3 Quiz Questions → 2 Activities -->
+                <div id="concepts-container"></div>
+
+                <!-- Submit Quiz Button (at the end of all concepts) -->
+                <div class="quiz-submit-section">
+                    <button id="submit-quiz-btn" class="btn btn-primary hidden">Submit All Quizzes</button>
+                    <div id="quiz-results" class="quiz-results hidden"></div>
+                </div>
+
+                <!-- Export Section -->
+                <section class="export-section">
+                    <button id="export-pdf-btn" class="btn btn-accent">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                        </svg>
+                        Export as PDF
+                    </button>
+                    <button id="export-html-btn" class="btn btn-accent">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        Export as HTML
+                    </button>
+                    <button id="export-scorm-btn" class="btn btn-accent">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                            <line x1="12" y1="22.08" x2="12" y2="12" />
+                        </svg>
+                        Export as SCORM
+                    </button>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2025 MemED - Powered by Advanced AI</p>
+        </footer>
+    </div>
+
+    <!-- PDF.js library for PDF text extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <!-- JSZip library for creating SCORM packages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- Application (ES6 Modules) -->
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="com.memed.scorm" version="1.0"
+          xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+          xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd
+                              http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd
+                              http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+  
+  <organizations default="ORG-1">
+    <organization identifier="ORG-1">
+      <title>MemED</title>
+      <item identifier="ITEM-1" identifierref="RES-1">
+        <title>MemED Activity</title>
+        <adlcp:masteryscore>80</adlcp:masteryscore>
+      </item>
+    </organization>
+  </organizations>
+  
+  <resources>
+    <resource identifier="RES-1" type="webcontent" adlcp:scormtype="sco" href="index.html">
+      <file href="index.html"/>
+      <file href="index.css"/>
+      <file href="app.js"/>
+      <file href="scorm-api.js"/>
+      <file href="css/formatting-toolbar.css"/>
+      <file href="js/ui/FormattingToolbar.js"/>
+      <file href="js/ui/EditManager.js"/>
+      <file href="js/ui/UIManager.js"/>
+      <file href="js/llm/GoogleProvider.js"/>
+      <file href="js/llm/LLMProviderFactory.js"/>
+      <file href="js/llm/AnthropicProvider.js"/>
+      <file href="js/llm/OpenAIProvider.js"/>
+      <file href="js/llm/LLMProvider.js"/>
+      <file href="js/exporters/PDFExporter.js"/>
+      <file href="js/exporters/HTMLExporter.js"/>
+      <file href="js/exporters/SCORMExporter.js"/>
+      <file href="js/utils/PDFHandler.js"/>
+      <file href="js/utils/SCORMAssets.js"/>
+      <file href="js/utils/MarkdownFormatter.js"/>
+      <file href="js/utils/ConfigManager.js"/>
+      <file href="js/generators/QuizGenerator.js"/>
+      <file href="js/generators/ConceptExtractor.js"/>
+      <file href="js/generators/KnowledgeCheckGenerator.js"/>
+      <file href="js/generators/ActivityGenerator.js"/>
+    </resource>
+  </resources>
+  
+</manifest>
