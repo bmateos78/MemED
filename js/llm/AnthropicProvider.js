@@ -26,7 +26,11 @@ class AnthropicProvider extends LLMProvider {
             body.system = systemPrompt;
         }
 
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        // Use proxy in production to avoid CORS issues
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const url = isLocal ? 'https://api.anthropic.com/v1/messages' : '/api/anthropic/v1/messages';
+
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

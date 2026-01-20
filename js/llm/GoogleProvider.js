@@ -10,8 +10,11 @@ class GoogleProvider extends LLMProvider {
 
     getTokenLimit() {
         const limits = {
-            'gemini-pro': 25000,
-            'gemini-pro-vision': 12000
+            'gemini-pro': 30000,
+            'gemini-pro-vision': 16000,
+            'gemini-1.5-pro-001': 1000000,
+            'gemini-1.5-flash-001': 1000000,
+            'gemini-2.5-flash': 1000000
         };
         return limits[this.model] || 25000;
     }
@@ -29,7 +32,11 @@ class GoogleProvider extends LLMProvider {
             };
         }
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`, {
+        // Use proxy in production to avoid CORS issues
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const baseUrl = isLocal ? 'https://generativelanguage.googleapis.com' : '/api/google';
+
+        const response = await fetch(`${baseUrl}/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

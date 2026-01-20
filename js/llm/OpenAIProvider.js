@@ -19,7 +19,12 @@ class OpenAIProvider extends LLMProvider {
 
     async generateCompletion(prompt, systemPrompt = null) {
         const defaultSystemPrompt = 'You are an expert educational content creator. Always respond with valid JSON.';
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+
+        // Use proxy in production to avoid CORS issues
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const url = isLocal ? 'https://api.openai.com/v1/chat/completions' : '/api/openai/v1/chat/completions';
+
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

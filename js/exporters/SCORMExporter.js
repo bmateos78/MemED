@@ -64,7 +64,7 @@ class SCORMExporter {
   </metadata>
   <organizations default="ORG-1">
     <organization identifier="ORG-1">
-      <title>MemED Course</title>
+      <title>Content</title>
       ${conceptItems}
       ${quizItem}
     </organization>
@@ -87,7 +87,8 @@ class SCORMExporter {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 2rem; background: #f5f7fa; line-height: 1.6; color: #2d3748; }
-        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .container { max-width: 1024px; width: 100%; margin: 0 auto; background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        @media (max-width: 768px) { body { padding: 1rem; } .container { padding: 1rem; } }
         .header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #edf2f7; padding-bottom: 1rem; }
         .number { width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .content { margin-bottom: 2rem; white-space: pre-wrap; }
@@ -115,9 +116,11 @@ class SCORMExporter {
         .question-title { font-weight: 600; margin-bottom: 0.75rem; }
         .options { display: flex; flex-direction: column; gap: 0.5rem; }
         .option { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: white; border: 1px solid #e2e8f0; border-radius: 4px; }
-        .matching-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
-        .matching-left { flex: 1; background: #edf2f7; padding: 0.5rem; border-radius: 4px; font-size: 0.9rem; }
-        .matching-select { flex: 1; padding: 0.5rem; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .matching-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .matching-left { flex: 1; min-width: 200px; background: #edf2f7; padding: 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+        .matching-select { flex: 1; min-width: 200px; max-width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .matching-select option { white-space: normal; word-wrap: break-word; }
+        @media (max-width: 768px) { .matching-row { flex-direction: column; gap: 0.5rem; } .matching-left, .matching-select { width: 100%; min-width: 100%; } }
         .submit-topic-quiz { margin-top: 1rem; background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; }
         .feedback { margin-top: 1rem; padding: 1rem; border-radius: 6px; display: none; }
         .feedback.correct { background: #c6f6d5; color: #22543d; }
@@ -132,6 +135,26 @@ class SCORMExporter {
         </div>
         
         <div class="content">${concept.text}</div>
+
+        <div class="section">
+            <h3>🎯 Knowledge Checks</h3>
+            ${concept.knowledgeChecks.map(check => `
+                <div class="knowledge-check-container" onclick="this.classList.toggle('flipped')">
+                    <div class="flashcard">
+                        <div class="flashcard-front">
+                            <span class="flashcard-label">Question</span>
+                            <div class="flashcard-icon">❓</div>
+                            <div class="question-text">${check.question}</div>
+                        </div>
+                        <div class="flashcard-back">
+                            <span class="flashcard-label">Answer</span>
+                            <div class="flashcard-icon">💡</div>
+                            <div class="answer-text">${check.answer}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
 
         <div class="section">
             <h3>📊 Topic Practice</h3>
@@ -170,26 +193,7 @@ class SCORMExporter {
             <div id="topic-feedback" class="feedback"></div>
             </div>
         </div>
-        
-        <div class="section">
-            <h3>🎯 Knowledge Checks</h3>
-            ${concept.knowledgeChecks.map(check => `
-                <div class="knowledge-check-container" onclick="this.classList.toggle('flipped')">
-                    <div class="flashcard">
-                        <div class="flashcard-front">
-                            <span class="flashcard-label">Question</span>
-                            <div class="flashcard-icon">❓</div>
-                            <div class="question-text">${check.question}</div>
-                        </div>
-                        <div class="flashcard-back">
-                            <span class="flashcard-label">Answer</span>
-                            <div class="flashcard-icon">💡</div>
-                            <div class="answer-text">${check.answer}</div>
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
+
         
         <div class="section">
             <h3>🚀 Learning Activities</h3>
@@ -242,6 +246,12 @@ class SCORMExporter {
         }
 
         window.addEventListener('load', () => {
+            // Force links to open in new tab
+            document.querySelectorAll('a').forEach(link => {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            });
+
             if (window.scormAPI) {
                 window.scormAPI.setValue('cmi.core.lesson_status', 'completed');
                 window.scormAPI.commit();
@@ -263,16 +273,19 @@ class SCORMExporter {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 2rem; background: #f5f7fa; color: #2d3748; }
-        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .container { max-width: 1024px; width: 100%; margin: 0 auto; background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        @media (max-width: 768px) { body { padding: 1rem; } .container { padding: 1rem; } }
         h1 { margin-bottom: 2rem; text-align: center; color: #2d3748; }
         .quiz-question { background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #667eea; }
         .question-title { font-weight: 600; margin-bottom: 1rem; }
         .options { display: flex; flex-direction: column; gap: 0.5rem; }
         .option { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: white; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
         .option:hover { background: #f1f5f9; border-color: #667eea; }
-        .matching-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
-        .matching-left { flex: 1; background: #edf2f7; padding: 0.75rem; border-radius: 6px; font-size: 0.9rem; border: 1px solid #e2e8f0; }
-        .matching-select { flex: 1; padding: 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; background: white; }
+        .matching-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+        .matching-left { flex: 1; min-width: 250px; background: #edf2f7; padding: 0.75rem; border-radius: 6px; font-size: 0.9rem; border: 1px solid #e2e8f0; }
+        .matching-select { flex: 1; min-width: 250px; max-width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; background: white; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .matching-select option { white-space: normal; word-wrap: break-word; }
+        @media (max-width: 768px) { .matching-row { flex-direction: column; gap: 0.5rem; } .matching-left, .matching-select { width: 100%; min-width: 100%; } }
         #submit-btn { width: 100%; background: #667eea; color: white; border: none; padding: 1.25rem; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 2rem; box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4); }
         #submit-btn:hover { background: #5a67d8; transform: translateY(-1px); }
         .results { display: none; margin-top: 2rem; text-align: center; animation: fadeIn 0.5s ease-out; }
@@ -372,6 +385,13 @@ class SCORMExporter {
                 window.scormAPI.commit();
             }
         }
+
+        window.addEventListener('load', () => {
+            document.querySelectorAll('a').forEach(link => {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            });
+        });
     </script>
 </body>
 </html>`;
