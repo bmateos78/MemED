@@ -93,6 +93,14 @@
                                 <!-- Options populated dynamically -->
                             </select>
                         </div>
+
+                        <div class="form-group" id="image-model-group">
+                            <label for="image-model-name">Image Generation Model</label>
+                            <select id="image-model-name" class="form-control">
+                                <!-- Options populated dynamically -->
+                            </select>
+                            <small class="form-hint">Used for infographic generation. If the selected model is unavailable, a fallback will be tried automatically.</small>
+                        </div>
                     </div>
 
                     <div class="alert alert-info">
@@ -153,6 +161,13 @@
                         </svg>
                         Clear
                     </button>
+                    <input type="file" id="scorm-import" accept=".zip" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0.01;">
+                    <button id="import-scorm-btn" type="button" class="btn btn-secondary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                        </svg>
+                        Load SCORM to Edit
+                    </button>
                 </div>
             </section>
 
@@ -204,7 +219,7 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>© 2025 MemED - Powered by Advanced AI</p>
+            <p>© 2025 MemED - Created by Bruno Mateos</p>
         </footer>
     </div>
 

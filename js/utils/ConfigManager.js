@@ -19,7 +19,8 @@ class ConfigManager {
         return {
             provider: 'none',
             apiKey: '',
-            model: ''
+            model: '',
+            imageModel: ''
         };
     }
 

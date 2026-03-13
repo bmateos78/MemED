@@ -381,6 +381,13 @@ class EditManager {
                 btn.innerHTML = '💾 Save';
                 btn.classList.add('save-mode');
                 container.classList.add('editing');
+
+                // Pre-check the correct answer radio button
+                const correctIndex = questionData.correct;
+                const correctRadio = container.querySelector(`input[type="radio"][value="${correctIndex}"]`);
+                if (correctRadio) {
+                    correctRadio.checked = true;
+                }
             }
         }
     }
@@ -440,11 +447,190 @@ class EditManager {
         }
     }
 
-    async destroyAllEditors() {
-        for (const key in this.editors) {
-            // Simply refresh the page or clear editors object
-            delete this.editors[key];
+    setFinalExamQuestions(questions) {
+        this.finalExamQuestions = questions;
+    }
+
+    attachFinalExamEditListeners(block) {
+        const editButtons = block.querySelectorAll('.edit-btn');
+        editButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const editType = btn.dataset.editType;
+                if (editType === 'final-exam') {
+                    this.editFinalExamQuestion(parseInt(btn.dataset.finalExamIndex));
+                }
+            });
+        });
+    }
+
+    async editFinalExamQuestion(questionIndex) {
+        const container = document.querySelector(`.quiz-question-container[data-final-exam-index="${questionIndex}"]`);
+        const btn = container.querySelector('.edit-btn');
+        const questionData = this.finalExamQuestions[questionIndex];
+        const editorKey = `final-${questionIndex}`;
+
+        if (questionData.type === 'matching') {
+            const titleSpan = container.querySelector('[data-field="title"]');
+            const pairsContainer = container.querySelector('.matching-pairs');
+            const leftElements = pairsContainer.querySelectorAll('[data-field^="left-"]');
+            const rightCorrectElements = pairsContainer.querySelectorAll('[data-field^="right-"]');
+
+            if (this.editors[editorKey]) {
+                // Save Logic for Matching
+                const titleEditor = this.editors[`${editorKey}-title`];
+                questionData.title = titleEditor.root.innerHTML;
+
+                const newPairs = [];
+                leftElements.forEach((el, idx) => {
+                    const lEditor = this.editors[`${editorKey}-l-${idx}`];
+                    const rEditor = this.editors[`${editorKey}-r-${idx}`];
+
+                    const leftText = lEditor.root.innerHTML;
+                    const rightText = rEditor.root.innerHTML;
+
+                    newPairs.push({ left: leftText, right: rightText });
+
+                    [lEditor, rEditor].forEach(ed => {
+                        const toolbar = ed.container.parentElement.querySelector('.ql-toolbar');
+                        if (toolbar) toolbar.remove();
+                    });
+
+                    el.innerHTML = leftText;
+                    el.classList.remove('editing', 'ql-container', 'ql-snow');
+
+                    const rDiv = rightCorrectElements[idx];
+                    rDiv.innerHTML = rightText;
+                    rDiv.style.display = 'none';
+                    rDiv.classList.remove('editing', 'ql-container', 'ql-snow');
+
+                    delete this.editors[`${editorKey}-l-${idx}`];
+                    delete this.editors[`${editorKey}-r-${idx}`];
+                });
+
+                questionData.pairs = newPairs;
+                const rightTexts = newPairs.map(p => p.right);
+                questionData.shuffledRight = [...rightTexts].sort(() => Math.random() - 0.5);
+
+                const selects = pairsContainer.querySelectorAll('select');
+                selects.forEach(select => {
+                    select.innerHTML = '<option value="">Select match...</option>' +
+                        questionData.shuffledRight.map((item, iIndex) => `
+                            <option value="${iIndex}">${item}</option>
+                        `).join('');
+                    select.style.display = 'block';
+                });
+
+                const tToolbar = titleSpan.parentElement.querySelector('.ql-toolbar');
+                if (tToolbar) tToolbar.remove();
+                titleSpan.innerHTML = titleEditor.root.innerHTML;
+                titleSpan.classList.remove('editing', 'ql-container', 'ql-snow');
+
+                delete this.editors[`${editorKey}-title`];
+                delete this.editors[editorKey];
+
+                btn.innerHTML = btn.innerHTML.replace('💾 Save', 'Edit');
+                btn.classList.remove('save-mode');
+                container.classList.remove('editing');
+            } else {
+                // Edit Mode Start for Matching
+                this._ensureResizeModuleRegistered();
+                const toolbarOptions = [['bold', 'italic', 'clean']];
+
+                this.editors[`${editorKey}-title`] = new Quill(titleSpan, { theme: 'snow', modules: { toolbar: toolbarOptions } });
+
+                leftElements.forEach((el, idx) => {
+                    this.editors[`${editorKey}-l-${idx}`] = new Quill(el, { theme: 'snow', modules: { toolbar: toolbarOptions } });
+
+                    const rDiv = rightCorrectElements[idx];
+                    rDiv.style.display = 'block';
+                    this.editors[`${editorKey}-r-${idx}`] = new Quill(rDiv, { theme: 'snow', modules: { toolbar: toolbarOptions } });
+                });
+
+                pairsContainer.querySelectorAll('select').forEach(s => s.style.display = 'none');
+
+                this.editors[editorKey] = true;
+                btn.innerHTML = '💾 Save';
+                btn.classList.add('save-mode');
+                container.classList.add('editing');
+            }
+        } else {
+            // Multiple Choice Logic
+            const questionDiv = container.querySelector('.question-text-content');
+            const optionLabels = container.querySelectorAll('label[data-field^="option-"]');
+
+            if (this.editors[editorKey]) {
+                // Save logic
+                const qEditor = this.editors[`${editorKey}-q`];
+                questionData.question = qEditor.root.innerHTML;
+
+                optionLabels.forEach((label, idx) => {
+                    const optEditor = this.editors[`${editorKey}-opt-${idx}`];
+                    questionData.options[idx] = optEditor.root.innerHTML;
+
+                    const toolbar = label.parentElement.querySelector('.ql-toolbar');
+                    if (toolbar) toolbar.remove();
+                    label.innerHTML = optEditor.root.innerHTML;
+                    label.classList.remove('editing', 'ql-container', 'ql-snow');
+                    delete this.editors[`${editorKey}-opt-${idx}`];
+                });
+
+                const toolbar = questionDiv.parentElement.querySelector('.ql-toolbar');
+                if (toolbar) toolbar.remove();
+                questionDiv.innerHTML = qEditor.root.innerHTML;
+                questionDiv.classList.remove('editing', 'ql-container', 'ql-snow');
+
+                const selectedOption = container.querySelector('input[type="radio"]:checked');
+                if (selectedOption) {
+                    questionData.correct = parseInt(selectedOption.value);
+                }
+
+                delete this.editors[`${editorKey}-q`];
+                delete this.editors[editorKey];
+
+                btn.innerHTML = btn.innerHTML.replace('💾 Save', 'Edit');
+                btn.classList.remove('save-mode');
+                container.classList.remove('editing');
+            } else {
+                // Create Editors
+                this._ensureResizeModuleRegistered();
+                const qQuill = new Quill(questionDiv, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [['bold', 'italic', 'image', 'clean']],
+                        resize: {
+                            showSize: true,
+                            toolbar: {
+                                buttons: ['25%', '50%', '100%'],
+                                styles: { backgroundColor: 'rgba(0,0,0,0.7)', color: 'white' }
+                            }
+                        }
+                    }
+                });
+                this.editors[`${editorKey}-q`] = qQuill;
+
+                optionLabels.forEach((label, idx) => {
+                    const optQuill = new Quill(label, { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'clean']] } });
+                    this.editors[`${editorKey}-opt-${idx}`] = optQuill;
+                });
+
+                this.editors[editorKey] = true;
+                btn.innerHTML = '💾 Save';
+                btn.classList.add('save-mode');
+                container.classList.add('editing');
+
+                // Pre-check the correct answer radio button
+                const correctIndex = questionData.correct;
+                const correctRadio = container.querySelector(`input[type="radio"][value="${correctIndex}"]`);
+                if (correctRadio) {
+                    correctRadio.checked = true;
+                }
+            }
         }
+    }
+
+    async destroyAllEditors() {
+        this.editors = {};
     }
 }
 

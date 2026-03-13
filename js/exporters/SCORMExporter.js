@@ -7,6 +7,14 @@ class SCORMExporter {
         this.finalExamQuestions = finalExamQuestions;
     }
 
+    /**
+     * Safely encode JSON for embedding inside a <script> tag.
+     * Escapes </ to <\/ so the HTML parser won't prematurely close the script element.
+     */
+    safeJsonForScript(data) {
+        return JSON.stringify(data).replace(/<\//g, '<\\/');
+    }
+
     async export() {
         const zip = new JSZip();
 
@@ -135,6 +143,18 @@ class SCORMExporter {
         </div>
         
         <div class="content">${concept.text}</div>
+
+        ${concept.infographic ? `
+        <div class="infographic-section" style="text-align: center; margin: 1.5rem 0;">
+            <h3>🎨 Infographic</h3>
+            <img src="${concept.infographic}" alt="Infographic for ${concept.title}" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        </div>
+        ` : ''}
+
+        <!-- Metadata for MemED Re-import -->
+        <script type="application/json" id="memed-concept-data">
+            ${this.safeJsonForScript(concept)}
+        </script>
 
         <div class="section">
             <h3>🎯 Knowledge Checks</h3>
@@ -298,6 +318,12 @@ class SCORMExporter {
     <div class="container">
         <h1>Final Assessment</h1>
         <p style="text-align: center; margin-bottom: 2rem; color: #4a5568;">Please answer all 10 questions to complete the course.</p>
+        
+        <!-- Metadata for MemED Re-import -->
+        <script type="application/json" id="memed-exam-data">
+            ${this.safeJsonForScript(this.finalExamQuestions)}
+        </script>
+        
         <div id="quiz-container">
             ${this.finalExamQuestions.map((q, qIdx) => {
             if (q.type === 'matching') {
